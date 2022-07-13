@@ -5,6 +5,7 @@ from project import settings
 
 api_patterns = [
     path('auth/', include('applications.authentication.urls'), name="Authentication"),
+    path('vending-machine/', include('applications.vending_machine.urls'), name="Authentication"),
 ]
 
 urlpatterns = [

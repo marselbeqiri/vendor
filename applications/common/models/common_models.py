@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import RestrictedError
 
 
 class Track(models.Model):
@@ -8,4 +7,3 @@ class Track(models.Model):
 
     class Meta:
         abstract = True
-

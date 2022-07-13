@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Internal
     'applications.common',
     'applications.authentication',
+    'applications.vending_machine',
 
 ]
 

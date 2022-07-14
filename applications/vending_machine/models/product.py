@@ -1,16 +1,11 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from applications.common.models import Track
+from applications.vending_machine.models.model_validations import multiple_of_5
 
 __all__ = [
     "Product",
 ]
-
-
-def multiple_of_5(value):
-    if value % 5 != 0:
-        raise ValidationError("Amount must be a multiple of 5")
 
 
 class Product(Track):

@@ -1,11 +1,7 @@
 from rest_framework import serializers
 
 from applications.vending_machine.models import Product
-
-
-def multiple_of_5(value):
-    if value % 5 != 0:
-        raise serializers.ValidationError("Amount must be a multiple of 5")
+from applications.vending_machine.serializers.serializer_validations import multiple_of_5
 
 
 class ProductSerializer(serializers.ModelSerializer):

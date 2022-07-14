@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from applications.authentication.constants import GROUPS
 from applications.authentication.models.user_manager import UserManager
 
 
@@ -19,3 +20,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.get_full_name()
+
+    def is_seller(self) -> bool:
+        return self.groups.filter(name=GROUPS.ADMIN).exists()

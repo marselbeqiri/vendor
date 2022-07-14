@@ -23,3 +23,6 @@ class User(AbstractUser):
 
     def is_seller(self) -> bool:
         return self.groups.filter(name=GROUPS.ADMIN).exists()
+
+    def is_buyer(self) -> bool:
+        return self.groups.filter(name=GROUPS.BUYER).exists()

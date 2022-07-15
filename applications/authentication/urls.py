@@ -4,7 +4,7 @@ from applications.authentication.views import (
     custom_token_obtain_pair_view,
     custom_token_refresh_view,
     user_view,
-    change_password_view,
+    change_password_view, logout_all_view,
 
 )
 
@@ -13,5 +13,6 @@ urlpatterns = [
     path("token/refresh/", custom_token_refresh_view, name="token_refresh"),
     path("user/", user_view, name="user_view"),
     path("user/change-password/", change_password_view, name="change_password"),
+    path('logout/all/', logout_all_view, name="logout"),
 
 ]

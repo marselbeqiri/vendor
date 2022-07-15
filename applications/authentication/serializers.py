@@ -1,10 +1,15 @@
+import logging
+
+from django.core.cache import cache
 from rest_framework import serializers
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer as ParentTokenObtainPairSerializer,
 )
 from rest_framework_simplejwt.serializers import (
     TokenRefreshSerializer as ParentTokenRefreshSerializer,
 )
+from rest_framework_simplejwt.tokens import AccessToken
 
 from applications.authentication.models import User
 
@@ -18,8 +23,21 @@ class TokenObtainPairSerializer(ParentTokenObtainPairSerializer):
                 "groups": list(self.user.groups.values_list('name', flat=True))
             }
         )
+        self.store_access(data["access"])
 
         return data
+
+    def store_access(self, access_token: str):
+        token_key_lookup = f"token_key_{self.user.id}"
+        token = cache.get(token_key_lookup, "")
+        try:
+            AccessToken(token)
+            raise serializers.ValidationError("There is already an active session using your account.")
+
+        except TokenError as e:
+            logging.info('Access token is not valid: {}'.format(e))
+
+        cache.set(token_key_lookup, access_token, timeout=30)
 
 
 class TokenRefreshSerializer(ParentTokenRefreshSerializer):

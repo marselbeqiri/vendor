@@ -11,3 +11,9 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     permission_classes = [ProductPermission]
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(seller=self.request.user)

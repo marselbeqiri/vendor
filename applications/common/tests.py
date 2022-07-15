@@ -1,10 +1,11 @@
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APITestCase
 from rest_framework.reverse import reverse
 from model_bakery import baker
 
 from faker import Faker
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from applications.authentication.models import User
 
@@ -96,3 +97,22 @@ class TestUserGetRetrieveUpdate(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password(payload['new_password']))
+
+
+class BaseAPITestCase(APITestCase):
+    faker: Faker
+    apiclient: APIClient
+    user: User
+
+    @staticmethod
+    def get_url_with_pk(viewname: str, pk: int | str) -> str:
+        return reverse(viewname, kwargs={'pk': pk})
+
+    def authorize_client(self):
+        self.user = baker.make("authentication.User", _fill_optional=True)
+        token_pair = self.get_token(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_pair.access_token}')
+
+    @classmethod
+    def get_token(cls, user):
+        return RefreshToken.for_user(user)

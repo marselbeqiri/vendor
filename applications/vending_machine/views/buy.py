@@ -1,31 +1,13 @@
-from abc import ABC, abstractmethod
-
 from django.db import transaction
 from rest_framework import mixins, status
-from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from applications.vending_machine.models import Product, Transaction
+from applications.vending_machine.models import Product
+from applications.vending_machine.permissions.buy import CanBuyProduct
+from applications.vending_machine.serializers import BuyProductSerializer, BuyResponseSerializer
 from applications.vending_machine.services.buy import IProcessPayment, ProcessPayment
-from applications.vending_machine.utils import amount_to_coins
-
-
-class BuyProductSerializer(serializers.Serializer):
-    product_id = serializers.IntegerField()
-    amount = serializers.IntegerField()
-
-
-class BuyResponseSerializer(serializers.Serializer):
-    product_id = serializers.IntegerField(source='product.id')
-    product_name = serializers.CharField(source='product.product_name')
-    amount = serializers.IntegerField()
-    total_spent = serializers.IntegerField()
-    # change = serializers.IntegerField(many=True, read_only=True)
-    change = serializers.ListField(
-        child=serializers.IntegerField(min_value=0, max_value=100)
-    )
 
 
 class BuyViewSet(mixins.CreateModelMixin, GenericViewSet):
@@ -36,8 +18,7 @@ class BuyViewSet(mixins.CreateModelMixin, GenericViewSet):
     """
     serializer_class = BuyProductSerializer
     response_serializer_class = BuyResponseSerializer
-
-    # permission_classes = [TransactionPermission]
+    permission_classes = [CanBuyProduct]
     queryset = Product.objects.all().select_related('seller')
 
     def create(self, request, *args, **kwargs):

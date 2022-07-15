@@ -31,6 +31,10 @@ class TestBuyProductAPIViews(BaseAPITestCase):
         self.authorize_client()
         self.set_buyer_role()
 
+    def set_seller_role(self):
+        group, is_created = Group.objects.get_or_create(name=GROUPS.ADMIN)
+        self.user.groups.add(group)
+
     def set_buyer_role(self):
         group, is_created = Group.objects.get_or_create(name=GROUPS.BUYER)
         self.user.groups.add(group)
@@ -49,6 +53,12 @@ class TestBuyProductAPIViews(BaseAPITestCase):
         response = self.client.post(self.url, self.buy_payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json()[0], "Not enough money")
+
+    def test__only_buyers_are_allowed_403(self):
+        self.authorize_client()
+        self.set_seller_role()
+        response = self.client.post(self.url, self.buy_payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test__buy_product_and_deposit(self):
         self.create_buyer_and_authorize()

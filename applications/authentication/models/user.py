@@ -26,3 +26,11 @@ class User(AbstractUser):
 
     def is_buyer(self) -> bool:
         return self.groups.filter(name=GROUPS.BUYER).exists()
+
+    def can_buy(self, money_spent: int) -> bool:
+        balance = self.get_balance()
+        return self.is_buyer() and balance >= money_spent
+
+    def get_balance(self) -> int:
+        transaction_model = self.transactions.model
+        return transaction_model.reconstruct_state(self.id)["balance"]

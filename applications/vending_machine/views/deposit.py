@@ -54,7 +54,13 @@ class DepositViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, GenericView
 
     def perform_create(self, serializer):
         balance = Transaction.reconstruct_state(user_id=self.request.user.id)['balance']
-        if balance < serializer.validated_data['amount']:
+        amount = serializer.validated_data['amount']
+        type_ = serializer.validated_data['type']
+        if (
+                balance < amount
+                and
+                type_ == Transaction.transaction_type_choices.WITHDRAW.value
+        ):
             raise serializers.ValidationError('Insufficient balance')
         serializer.save(user_id=self.request.user.id)
 

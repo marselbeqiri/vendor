@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -22,7 +23,7 @@ if os.environ.get("ENV_NAME") == 'production':
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list = json.loads(os.getenv('ALLOWED_HOSTS'))
 
 # Application definition
 
@@ -82,10 +83,15 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_DATABASE'),
+        'USER': os.getenv('DB_USERNAME'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT')
     }
 }
 

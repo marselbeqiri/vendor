@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
         self.validate_password(password, user)
         user.set_password(password)
         user.save()
-        self.put_on_admin_group(user)
+        # self.put_on_admin_group(user)
 
         return user
 

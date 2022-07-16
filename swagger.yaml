@@ -1,0 +1,691 @@
+swagger: '2.0'
+info:
+  title: Vending Machine API
+  description: Test description
+  termsOfService: https://www.google.com/policies/terms/
+  contact:
+    email: marselbeqiri.365@gmail.com
+  license:
+    name: BSD License
+  version: v1
+host: 127.0.0.1:8000
+schemes:
+  - http
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /auth/logout/all/:
+    post:
+      operationId: auth_logout_all_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - auth
+    parameters: []
+  /auth/token/:
+    post:
+      operationId: auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenObtainPair'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenObtainPair'
+      tags:
+        - auth
+    parameters: []
+  /auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      tags:
+        - auth
+    parameters: []
+  /auth/user/:
+    get:
+      operationId: auth_user_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserInfo'
+      tags:
+        - auth
+    post:
+      operationId: auth_user_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Registration'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Registration'
+      tags:
+        - auth
+    put:
+      operationId: auth_user_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserInfo'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserInfo'
+      tags:
+        - auth
+    patch:
+      operationId: auth_user_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserInfo'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserInfo'
+      tags:
+        - auth
+    delete:
+      operationId: auth_user_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - auth
+    parameters: []
+  /auth/user/change-password/:
+    put:
+      operationId: auth_user_change-password_update
+      description: An endpoint for changing password.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChangePassword'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ChangePassword'
+      tags:
+        - auth
+    patch:
+      operationId: auth_user_change-password_partial_update
+      description: An endpoint for changing password.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChangePassword'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ChangePassword'
+      tags:
+        - auth
+    parameters: []
+  /buy/:
+    post:
+      operationId: buy_create
+      description: |-
+        Deposit is constructed by using event sourcing technique.
+        So it will contain only creation of a new transaction events (Deposit/Withdraw).
+        State of the deposit is reconstructed from the events amount (Sum,Sub Deposits and Withdraws).
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BuyProduct'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/BuyProduct'
+      tags:
+        - buy
+    parameters: []
+  /deposit/:
+    get:
+      operationId: deposit_list
+      description: |-
+        Deposit is constructed by using event sourcing technique.
+        So it will contain only creation of a new transaction events (Deposit/Withdraw).
+        State of the deposit is reconstructed from the events amount (Sum,Sub Deposits and Withdraws).
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+      tags:
+        - deposit
+    post:
+      operationId: deposit_create
+      description: |-
+        Deposit is constructed by using event sourcing technique.
+        So it will contain only creation of a new transaction events (Deposit/Withdraw).
+        State of the deposit is reconstructed from the events amount (Sum,Sub Deposits and Withdraws).
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Transaction'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Transaction'
+      tags:
+        - deposit
+    parameters: []
+  /deposit/reset/:
+    get:
+      operationId: deposit_reset
+      description: |-
+        Deposit is constructed by using event sourcing technique.
+        So it will contain only creation of a new transaction events (Deposit/Withdraw).
+        State of the deposit is reconstructed from the events amount (Sum,Sub Deposits and Withdraws).
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/DepositBalance'
+      tags:
+        - deposit
+    parameters: []
+  /deposit/state/:
+    get:
+      operationId: deposit_state
+      description: |-
+        Deposit is constructed by using event sourcing technique.
+        So it will contain only creation of a new transaction events (Deposit/Withdraw).
+        State of the deposit is reconstructed from the events amount (Sum,Sub Deposits and Withdraws).
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/DepositBalance'
+      tags:
+        - deposit
+    parameters: []
+  /products/:
+    get:
+      operationId: products_list
+      description: ''
+      parameters:
+        - name: created_at
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: updated_at
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: product_name
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: amount_available
+          in: query
+          description: ''
+          required: false
+          type: number
+        - name: cost
+          in: query
+          description: ''
+          required: false
+          type: number
+        - name: seller
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Product'
+      tags:
+        - products
+    post:
+      operationId: products_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Product'
+      tags:
+        - products
+    parameters: []
+  /products/{id}/:
+    get:
+      operationId: products_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Product'
+      tags:
+        - products
+    put:
+      operationId: products_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Product'
+      tags:
+        - products
+    patch:
+      operationId: products_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Product'
+      tags:
+        - products
+    delete:
+      operationId: products_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - products
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this Product.
+        required: true
+        type: integer
+definitions:
+  TokenObtainPair:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  TokenRefresh:
+    required:
+      - refresh
+    type: object
+    properties:
+      refresh:
+        title: Refresh
+        type: string
+        minLength: 1
+      access:
+        title: Access
+        type: string
+        readOnly: true
+        minLength: 1
+  UserInfo:
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      first_name:
+        title: First name
+        type: string
+        maxLength: 150
+      last_name:
+        title: Last name
+        type: string
+        maxLength: 150
+      email:
+        title: Email
+        type: string
+        format: email
+        maxLength: 254
+      full_name:
+        title: Full name
+        type: string
+        readOnly: true
+        minLength: 1
+      groups:
+        type: array
+        items:
+          type: string
+        readOnly: true
+        uniqueItems: true
+  Registration:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+          only.
+        type: string
+        pattern: ^[\w.@+-]+$
+        maxLength: 150
+        minLength: 1
+      email:
+        title: Email
+        type: string
+        format: email
+        maxLength: 254
+      first_name:
+        title: First name
+        type: string
+        maxLength: 150
+      last_name:
+        title: Last name
+        type: string
+        maxLength: 150
+      password:
+        title: Password
+        type: string
+        maxLength: 128
+        minLength: 8
+  ChangePassword:
+    required:
+      - old_password
+      - new_password
+    type: object
+    properties:
+      old_password:
+        title: Old password
+        type: string
+        minLength: 1
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+  BuyProduct:
+    required:
+      - product_id
+      - amount
+    type: object
+    properties:
+      product_id:
+        title: Product id
+        type: integer
+      amount:
+        title: Amount
+        type: integer
+  Transaction:
+    required:
+      - amount
+      - type
+    type: object
+    properties:
+      id:
+        title: Id
+        type: string
+        format: uuid
+        readOnly: true
+      amount:
+        title: Amount
+        type: integer
+        enum:
+          - 5
+          - 10
+          - 20
+          - 50
+          - 100
+      buyer_full_name:
+        title: Buyer full name
+        type: string
+        readOnly: true
+        minLength: 1
+      type_label:
+        title: Type label
+        type: string
+        readOnly: true
+        minLength: 1
+      type:
+        title: Type
+        type: integer
+        enum:
+          - 0
+          - 1
+      created_at:
+        title: Created at
+        type: string
+        format: date-time
+        readOnly: true
+      user:
+        title: User
+        type: integer
+        readOnly: true
+  DepositBalance:
+    required:
+      - balance
+    type: object
+    properties:
+      balance:
+        title: Balance
+        type: integer
+  Product:
+    required:
+      - cost
+      - product_name
+      - amount_available
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      cost:
+        title: Cost
+        type: integer
+      seller_full_name:
+        title: Seller full name
+        type: string
+        readOnly: true
+        minLength: 1
+      created_at:
+        title: Created at
+        type: string
+        format: date-time
+        readOnly: true
+      updated_at:
+        title: Updated at
+        type: string
+        format: date-time
+        readOnly: true
+      product_name:
+        title: Product name
+        type: string
+        maxLength: 100
+        minLength: 1
+      amount_available:
+        title: Amount available
+        type: integer
+        maximum: 2147483647
+        minimum: 0
